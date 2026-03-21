@@ -1,0 +1,12 @@
+{
+  "name": "hamrojaanch-signaling",
+  "private": true,
+  "version": "0.1.0",
+  "main": "index.cjs",
+  "scripts": {
+    "dev": "node index.cjs"
+  },
+  "dependencies": {
+    "ws": "^8.17.0"
+  }
+}

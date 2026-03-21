@@ -1,0 +1,51 @@
+# Dependencies
+node_modules/
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.pid.lock
+
+# Coverage / test output
+coverage/
+.nyc_output/
+
+# Build artifacts
+dist/
+build/
+.tmp/
+tmp/
+.cache/
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Optional package manager caches
+.pnpm-store/
+.npm/
+.yarn/
+
+# OS / Editor files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Docker local overrides
+.docker/
+
+# Misc
+*.seed
