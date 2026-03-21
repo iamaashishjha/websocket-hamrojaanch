@@ -1,51 +1,84 @@
+########################################
 # Dependencies
+########################################
 node_modules/
+.pnpm-store/
+.npm/
+.yarn/
 
+########################################
+# Build / Production
+########################################
+dist/
+build/
+.tmp/
+tmp/
+.cache/
+.parcel-cache/
+.vite/
+.turbo/
+
+########################################
 # Logs
+########################################
 logs/
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+bun-debug.log*
 
+########################################
 # Runtime data
+########################################
 pids/
 *.pid
 *.pid.lock
+*.seed
 
-# Coverage / test output
-coverage/
-.nyc_output/
-
-# Build artifacts
-dist/
-build/
-.tmp/
-tmp/
-.cache/
-
-# Environment files
+########################################
+# Environment variables
+########################################
 .env
 .env.*
 !.env.example
 
+########################################
+# Coverage / Testing
+########################################
+coverage/
+.nyc_output/
+
+########################################
 # TypeScript
+########################################
 *.tsbuildinfo
 
-# Optional package manager caches
-.pnpm-store/
-.npm/
-.yarn/
+########################################
+# Prisma
+########################################
+prisma/migrations/*
+generated/
+# (optional) if using prisma client generation output
+# prisma/generated/
 
+########################################
+# Docker (local overrides only)
+########################################
+.docker/
+docker-compose.override.yml
+
+########################################
 # OS / Editor files
+########################################
 .DS_Store
 Thumbs.db
 .vscode/
 .idea/
 
-# Docker local overrides
-.docker/
-
+########################################
 # Misc
-*.seed
+########################################
+*.swp
+*.swo
