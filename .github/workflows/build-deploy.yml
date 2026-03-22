@@ -1,0 +1,80 @@
+name: Build & Deploy
+
+on:
+  push:
+    branches:
+      - "**"
+    tags:
+      - "v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build_push:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set image tag
+        id: vars
+        shell: bash
+        run: |
+          if [[ "${GITHUB_REF}" == refs/tags/* ]]; then
+            TAG="${GITHUB_REF#refs/tags/}"
+          else
+            TAG="${GITHUB_REF_NAME}"
+            TAG="${TAG//\//-}"
+          fi
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Setup Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Login to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.PAT_GITHUB_TOKEN }}
+
+      - name: Build & push hamrojaanch-websocket
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          file: docker/Dockerfile
+          push: true
+          provenance: false
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/hamrojaanch-websocket:${{ steps.vars.outputs.tag }}
+            ghcr.io/${{ github.repository_owner }}/hamrojaanch-websocket:${{ github.sha }}
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/hamrojaanch-websocket:buildcache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/hamrojaanch-websocket:buildcache,mode=max
+          build-args: |
+            BUILDKIT_PROGRESS=plain
+
+      - name: Tag & push latest (main or tags only)
+        if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+        shell: bash
+        run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/hamrojaanch-websocket"
+          docker pull "$IMAGE:${{ github.sha }}"
+          docker tag  "$IMAGE:${{ github.sha }}" "$IMAGE:latest"
+          docker push "$IMAGE:latest"
+
+  deploy:
+    needs: build_push
+    runs-on: ubuntu-latest
+    if: ${{ github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/') }}
+    steps:
+      - name: SSH deploy (pull + up)
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ vars.DEPLOY_HOST }}
+          username: ${{ vars.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          timeout: 60s
+          command_timeout: 45m
+          script: |
+            ${{ vars.DEPLOY_SCRIPT_PATH }}/infra-auto-deploy hamrojaanch_websocket up

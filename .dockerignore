@@ -1,6 +1,9 @@
 node_modules
 npm-debug.log*
 *.log
+.git
+.github
+.gitignore
 .env
 .env.*
 coverage
